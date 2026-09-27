@@ -1,0 +1,25 @@
+{
+  "name": "graphql-postgres-api",
+  "version": "1.0.0",
+  "description": "API GraphQL con PostgreSQL usando PostGraphile - Sistema Empresarial",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js",
+    "setup-db": "node src/setupDatabase.js",
+    "build": "node src/setupDatabase.js"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "postgraphile": "^4.14.0",
+    "pg": "^8.11.3",
+    "dotenv": "^16.3.1",
+    "cors": "^2.8.5"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
+  }
+}

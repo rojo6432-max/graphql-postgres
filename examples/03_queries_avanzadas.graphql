@@ -1,0 +1,148 @@
+# ============================================================
+# QUERIES AVANZADAS - Casos de uso empresarial real
+# ============================================================
+
+
+# ─── Dashboard Ejecutivo: resumen general ─────────────────────────────────────
+query DashboardEjecutivo {
+  totalClientes: allClientes { totalCount }
+  clientesActivos: allClientes(condition: { activo: true }) { totalCount }
+  totalProductos: allProductos { totalCount }
+  pedidosPendientes: allPedidos(condition: { estado: "pendiente" }) { totalCount }
+  pedidosEnviados: allPedidos(condition: { estado: "enviado" }) { totalCount }
+  pedidosEntregados: allPedidos(condition: { estado: "entregado" }) { totalCount }
+}
+
+
+# ─── Reporte de ventas: pedidos entregados ────────────────────────────────────
+query ReporteVentasEntregadas {
+  allPedidos(condition: { estado: "entregado" }, orderBy: TOTAL_DESC) {
+    nodes {
+      id
+      total
+      fechaPedido
+      clienteByClienteId {
+        nombre
+        apellido
+        empresa
+        ciudad
+        pais
+      }
+      empleadoByEmpleadoId {
+        nombre
+        apellido
+        cargo
+      }
+      detallePedidosByPedidoId {
+        totalCount
+        nodes {
+          cantidad
+          subtotal
+          productoByProductoId {
+            nombre
+            sku
+          }
+        }
+      }
+    }
+    totalCount
+  }
+}
+
+
+# ─── Inventario: productos con stock bajo (menos de 10 unidades) ──────────────
+# Nota: PostGraphile soporta filtros avanzados con el plugin @graphile/pg-simplify-inflector
+# Con el plugin de filtros habilitado se usaría: filter: { stock: { lessThan: 10 } }
+query InventarioCritico {
+  allProductos(orderBy: STOCK_ASC, first: 10) {
+    nodes {
+      id
+      nombre
+      sku
+      stock
+      precio
+      categoriaByCategoriaid {
+        nombre
+      }
+    }
+  }
+}
+
+
+# ─── Perfil completo de un cliente ────────────────────────────────────────────
+query PerfilCompletoCliente {
+  clienteById(id: 1) {
+    id
+    nombre
+    apellido
+    email
+    telefono
+    empresa
+    ciudad
+    pais
+    creadoEn
+    pedidosByClienteId {
+      totalCount
+      nodes {
+        id
+        estado
+        total
+        fechaPedido
+        detallePedidosByPedidoId {
+          nodes {
+            cantidad
+            subtotal
+            productoByProductoId {
+              nombre
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+
+# ─── Catálogo de productos por categoría ─────────────────────────────────────
+query CatalogoPorCategoria {
+  allCategorias(orderBy: NOMBRE_ASC) {
+    nodes {
+      id
+      nombre
+      descripcion
+      productosByCategoriaId(condition: { activo: true }, orderBy: PRECIO_ASC) {
+        totalCount
+        nodes {
+          id
+          nombre
+          descripcion
+          precio
+          stock
+          sku
+        }
+      }
+    }
+  }
+}
+
+
+# ─── Nómina por departamento ──────────────────────────────────────────────────
+query NominaPorDepartamento {
+  allDepartamentos {
+    nodes {
+      id
+      nombre
+      ubicacion
+      empleadosByDepartamentoId(condition: { activo: true }, orderBy: SALARIO_DESC) {
+        totalCount
+        nodes {
+          nombre
+          apellido
+          cargo
+          salario
+          fechaIngreso
+        }
+      }
+    }
+  }
+}

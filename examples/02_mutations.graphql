@@ -1,0 +1,247 @@
+# ============================================================
+# EJEMPLOS DE MUTATIONS (CREAR, ACTUALIZAR, ELIMINAR)
+# Ejecutar en: http://localhost:3000/graphiql
+# ============================================================
+
+
+# ─── CREAR (CREATE) ───────────────────────────────────────────────────────────
+
+# 1. Crear un nuevo cliente
+mutation CrearCliente {
+  createCliente(
+    input: {
+      cliente: {
+        nombre: "Jorge"
+        apellido: "Pérez"
+        email: "jorge.perez@nuevaempresa.com"
+        telefono: "555-9999"
+        empresa: "Nueva Empresa SA"
+        ciudad: "Querétaro"
+        pais: "México"
+      }
+    }
+  ) {
+    cliente {
+      id
+      nombre
+      apellido
+      email
+      creado_en: creadoEn
+    }
+  }
+}
+
+
+# 2. Crear un nuevo producto
+mutation CrearProducto {
+  createProducto(
+    input: {
+      producto: {
+        nombre: "Headset Sony WH-1000XM5"
+        descripcion: "Auriculares inalámbricos con cancelación de ruido premium"
+        precio: 6500.00
+        stock: 25
+        categoriaId: 1
+        sku: "SONY-HEAD-013"
+      }
+    }
+  ) {
+    producto {
+      id
+      nombre
+      precio
+      stock
+      sku
+    }
+  }
+}
+
+
+# 3. Crear un nuevo pedido
+mutation CrearPedido {
+  createPedido(
+    input: {
+      pedido: {
+        clienteId: 3
+        empleadoId: 1
+        estado: "pendiente"
+        notas: "Pedido urgente para evento corporativo"
+      }
+    }
+  ) {
+    pedido {
+      id
+      estado
+      fechaPedido
+      clienteByClienteId {
+        nombre
+        empresa
+      }
+    }
+  }
+}
+
+
+# 4. Agregar producto a un pedido (detalle)
+mutation AgregarDetallePedido {
+  createDetallePedido(
+    input: {
+      detallePedido: {
+        pedidoId: 3
+        productoId: 1
+        cantidad: 2
+        precioUnit: 28999.00
+      }
+    }
+  ) {
+    detallePedido {
+      id
+      cantidad
+      precioUnit
+      subtotal
+      productoByProductoId {
+        nombre
+      }
+    }
+  }
+}
+
+
+# 5. Crear un empleado nuevo
+mutation CrearEmpleado {
+  createEmpleado(
+    input: {
+      empleado: {
+        nombre: "Gabriela"
+        apellido: "Orozco"
+        email: "gabriela.o@empresa.com"
+        cargo: "Analista de Datos"
+        salario: 52000.00
+        departamentoId: 2
+      }
+    }
+  ) {
+    empleado {
+      id
+      nombre
+      apellido
+      cargo
+      departamentoByDepartamentoId {
+        nombre
+      }
+    }
+  }
+}
+
+
+# ─── ACTUALIZAR (UPDATE) ──────────────────────────────────────────────────────
+
+# 6. Actualizar el estado de un pedido
+mutation ActualizarEstadoPedido {
+  updatePedidoById(
+    input: {
+      id: 3
+      pedidoPatch: {
+        estado: "enviado"
+        actualizadoEn: "2026-09-26T23:00:00"
+      }
+    }
+  ) {
+    pedido {
+      id
+      estado
+      actualizadoEn
+    }
+  }
+}
+
+
+# 7. Actualizar precio y stock de un producto
+mutation ActualizarProducto {
+  updateProductoById(
+    input: {
+      id: 2
+      productoPatch: {
+        precio: 9200.00
+        stock: 28
+      }
+    }
+  ) {
+    producto {
+      id
+      nombre
+      precio
+      stock
+    }
+  }
+}
+
+
+# 8. Actualizar datos de un cliente
+mutation ActualizarCliente {
+  updateClienteById(
+    input: {
+      id: 4
+      clientePatch: {
+        telefono: "555-0001"
+        ciudad: "Cancún"
+        empresa: "LV Importaciones Actualizada"
+      }
+    }
+  ) {
+    cliente {
+      id
+      nombre
+      empresa
+      ciudad
+      telefono
+    }
+  }
+}
+
+
+# 9. Dar de baja un empleado (soft delete)
+mutation DesactivarEmpleado {
+  updateEmpleadoById(
+    input: {
+      id: 3
+      empleadoPatch: {
+        activo: false
+      }
+    }
+  ) {
+    empleado {
+      id
+      nombre
+      apellido
+      activo
+    }
+  }
+}
+
+
+# ─── ELIMINAR (DELETE) ────────────────────────────────────────────────────────
+
+# 10. Eliminar un detalle de pedido
+mutation EliminarDetallePedido {
+  deleteDetallePedidoById(input: { id: 5 }) {
+    deletedDetallePedidoId
+    detallePedido {
+      pedidoId
+      productoByProductoId {
+        nombre
+      }
+    }
+  }
+}
+
+
+# 11. Eliminar una categoría (solo si no tiene productos)
+mutation EliminarCategoria {
+  deleteCategoriaById(input: { id: 5 }) {
+    deletedCategoriaId
+    categoria {
+      nombre
+    }
+  }
+}

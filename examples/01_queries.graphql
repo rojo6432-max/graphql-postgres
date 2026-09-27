@@ -1,0 +1,182 @@
+# ============================================================
+# EJEMPLOS DE QUERIES (LECTURA DE DATOS)
+# Ejecutar en: http://localhost:3000/graphiql
+# ============================================================
+
+
+# ─── 1. Listar todos los clientes ─────────────────────────────────────────────
+query ObtenerTodosLosClientes {
+  allClientes {
+    nodes {
+      id
+      nombre
+      apellido
+      email
+      empresa
+      ciudad
+      pais
+      activo
+    }
+  }
+}
+
+
+# ─── 2. Buscar un cliente por ID ──────────────────────────────────────────────
+query ObtenerClientePorId {
+  clienteById(id: 1) {
+    id
+    nombre
+    apellido
+    email
+    telefono
+    empresa
+    ciudad
+  }
+}
+
+
+# ─── 3. Listar todos los productos con su categoría ───────────────────────────
+query ObtenerProductosConCategoria {
+  allProductos {
+    nodes {
+      id
+      nombre
+      descripcion
+      precio
+      stock
+      sku
+      activo
+      categoriaByCategoriaid {
+        nombre
+      }
+    }
+  }
+}
+
+
+# ─── 4. Filtrar productos por categoría (ejemplo: Electrónica = id 1) ─────────
+query ProductosPorCategoria {
+  allProductos(condition: { categoriaId: 1 }) {
+    nodes {
+      id
+      nombre
+      precio
+      stock
+      sku
+    }
+  }
+}
+
+
+# ─── 5. Listar pedidos con cliente, empleado y detalle ────────────────────────
+query ObtenerPedidosCompletos {
+  allPedidos {
+    nodes {
+      id
+      estado
+      total
+      fechaPedido
+      notas
+      clienteByClienteId {
+        nombre
+        apellido
+        empresa
+      }
+      empleadoByEmpleadoId {
+        nombre
+        apellido
+        cargo
+      }
+      detallePedidosByPedidoId {
+        nodes {
+          cantidad
+          precioUnit
+          subtotal
+          productoByProductoId {
+            nombre
+            sku
+          }
+        }
+      }
+    }
+  }
+}
+
+
+# ─── 6. Pedidos por estado ────────────────────────────────────────────────────
+query PedidosPendientes {
+  allPedidos(condition: { estado: "pendiente" }) {
+    nodes {
+      id
+      total
+      fechaPedido
+      clienteByClienteId {
+        nombre
+        apellido
+      }
+    }
+  }
+}
+
+
+# ─── 7. Empleados con su departamento ─────────────────────────────────────────
+query EmpleadosConDepartamento {
+  allEmpleados {
+    nodes {
+      id
+      nombre
+      apellido
+      cargo
+      salario
+      activo
+      departamentoByDepartamentoId {
+        nombre
+        ubicacion
+      }
+    }
+  }
+}
+
+
+# ─── 8. Contar total de registros (paginación) ────────────────────────────────
+query TotalClientes {
+  allClientes {
+    totalCount
+  }
+}
+
+
+# ─── 9. Paginación - primeros 3 productos ─────────────────────────────────────
+query ProductosPaginados {
+  allProductos(first: 3, offset: 0, orderBy: PRECIO_DESC) {
+    nodes {
+      nombre
+      precio
+      stock
+    }
+    totalCount
+    pageInfo {
+      hasNextPage
+      hasPreviousPage
+    }
+  }
+}
+
+
+# ─── 10. Listar categorías con sus productos ─────────────────────────────────
+query CategoriasConProductos {
+  allCategorias {
+    nodes {
+      id
+      nombre
+      descripcion
+      productosByCategoriaId {
+        totalCount
+        nodes {
+          nombre
+          precio
+        }
+      }
+    }
+  }
+}

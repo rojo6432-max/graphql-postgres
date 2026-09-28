@@ -13,6 +13,13 @@ const cors = require('cors');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Agregar SSL para conexiones en producción (Render, Railway, etc.)
+const DATABASE_URL = process.env.DATABASE_URL || 'postgres://postgres:1234567@localhost:5432/empresa_db';
+
+const pgSettings = process.env.NODE_ENV === 'production' ? {
+  ssl: { rejectUnauthorized: false }
+} : {};
+
 // ─── Middleware ────────────────────────────────────────────────────────────────
 app.use(cors());
 app.use(express.json());
@@ -30,7 +37,7 @@ app.get('/', (req, res) => {
 // ─── PostGraphile: genera el esquema GraphQL automáticamente ──────────────────
 app.use(
   postgraphile(
-    process.env.DATABASE_URL || 'postgres://usuario:contraseña@localhost:5432/empresa_db',
+    { connectionString: DATABASE_URL, ...pgSettings },
     'public',  // esquema de PostgreSQL a exponer
     {
       // Habilita la interfaz visual GraphiQL en el navegador
